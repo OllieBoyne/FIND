@@ -3,11 +3,9 @@
 const CANVAS_SIZE = 280;
 const CANVAS_SCALE = 0.5;
 
-import * as THREE from 'https://unpkg.com/three/build/three.module.js';
-// import * as THREE from './threejs-light/three.module.js'
+import * as THREE from './threejs-light/three.module.js'
 import {OrbitControls} from './threejs-light/OrbitControls.js'
 import { GUI } from './threejs-light/lil-gui.module.min.js';
-import { OBJLoader } from './threejs-light/OBJLoader.js'
 
 let mesh
 
