@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>My first three.js app</title>
+        <style>
+            body { margin: 0; }
+        </style>
+		<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
+        <script type="text/javascript" src="http://k3d.ivank.net/K3D.js"></script>
+<!--        <script src="3d-viewer.js" type="module"></script>-->
+    </head>
+    <body>        <script src="3d-viewer.js" type="module"></script>
+<!--        <script type="module">-->
+<!--            // import * as THREE from 'https://unpkg.com/three/build/three.module.js';-->
+<!--            import * as THREE from './threejs-light/three.module.js'-->
+<!--            import {OrbitControls} from './threejs-light/OrbitControls.js'-->
+<!--            import { GUI } from './threejs-light/lil-gui.module.min.js';-->
+<!--            import { OBJLoader } from './threejs-light/OBJLoader.js'-->
+
+<!--            const scene = new THREE.Scene();-->
+<!--            const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );-->
+
+<!--            const renderer = new THREE.WebGLRenderer();-->
+<!--            renderer.setSize( window.innerWidth, window.innerHeight );-->
+<!--            document.body.appendChild( renderer.domElement );-->
+
+<!--            function render() {renderer.render( scene, camera );}-->
+
+
+
+<!--			// Control camera via clicking-->
+<!--			const controls = new OrbitControls( camera, renderer.domElement );-->
+<!--			controls.target.set( 0, 0.5, 0 );-->
+<!--			controls.update();-->
+<!--			controls.enablePan = false;-->
+<!--			controls.enableDamping = true;-->
+
+<!--            // LOAD FOOT TEMPLATE-->
+<!--            // instantiate a loader-->
+<!--            const loader = new OBJLoader();-->
+
+<!--            // load a resource-->
+<!--            let geometry-->
+<!--            loader.load(-->
+<!--                // resource URL-->
+<!--                './find-demo-model/template.obj',-->
+<!--                // called when resource is loaded-->
+<!--                function ( object ) {-->
+<!--                    geometry = object.geometry;-->
+<!--                    scene.add( object );-->
+<!--                    },-->
+<!--                // called when loading is in progresses-->
+<!--                function ( xhr ) {console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );},-->
+<!--                    // called when loading has errors-->
+<!--                    function ( error ) {console.log( 'An error happened' );}-->
+<!--            );-->
+
+<!--            console.log(geometry)-->
+
+<!--            // const geometry = new THREE.SphereGeometry( 1, 10, 10 );-->
+<!--			// const geometry = new THREE.BoxGeometry();-->
+<!--            // const material = new THREE.MeshBasicMaterial( { color: 0x888888 } );-->
+<!--			// const material = new THREE.MeshStandardMaterial( {-->
+<!--			// 			color: 0xff00000,-->
+<!--						// side: THREE.DoubleSide,-->
+<!--					// } );-->
+
+<!--            const cube = new THREE.Mesh( geometry, material );-->
+
+<!--			const light = new THREE.HemisphereLight( 0xffffff, 0x080808, 1. );-->
+<!--			light.position.set( 0.1, 0, 1 );-->
+<!--			scene.add( light );-->
+
+<!--			let position = geometry.getAttribute('position');-->
+
+<!--			geometry.verticesNeedUpdate = true-->
+<!--			position.needsUpdate = true;-->
+
+<!--			camera.position.z = 2;-->
+
+
+
+<!--            // gui-->
+<!--            const params = {-->
+<!--				length: 1,-->
+<!--			};-->
+
+<!--            const gui = new GUI();-->
+
+<!--            gui.add( params, 'length' , 0.1, 2).name( 'Length' ).onChange( function ( value ) {-->
+<!--                    for (let i=0; i<position.count; i++)-->
+<!--                        if (position.getX(i)>0) {position.setX(i, value)}-->
+<!--                    else {position.setX(i, -value)}-->
+<!--					render();-->
+<!--				} );-->
+
+<!--            const animate = function () {-->
+<!--                requestAnimationFrame( animate );-->
+
+<!--				position.needsUpdate = true;-->
+<!--				controls.update();-->
+<!--                renderer.render( scene, camera );-->
+<!--            };-->
+
+<!--            animate();-->
+        </script>
+    </body>
+</html>
+
+<!--https://stackoverflow.com/questions/50176191/three-js-manipulate-an-object-from-objloader-->
