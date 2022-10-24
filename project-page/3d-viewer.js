@@ -62,7 +62,7 @@ function read_obj(objText) {
 		{
 			var v = vertex.split(" ");
 			v.shift();
-			vertices.push.apply(vertices, v.map(parseFloat).reverse())
+			vertices.push.apply(vertices, v.map(parseFloat))
 		})
 		obj_data.vertices = new THREE.Float32BufferAttribute( new Float32Array(vertices ), 3);
 	}
@@ -91,6 +91,7 @@ function setupScene() {
 	geometry.computeVertexNormals()
 
 	position = geometry.getAttribute('position');
+	colours = geometry.getAttribute('color')
 
 	// geometry.setAttribute("color", new THREE.BufferAttribute(new Float32Array(position.count * 3).fill(1), 3))
 	// colours = geometry.getAttribute('color');
@@ -128,9 +129,13 @@ function setupScene() {
 
 
 function setupModel(){
-	const model_params = {shape1: 0};
+	const model_params = {shape1: 0, tex1:0};
 	var f2 = gui.addFolder('Shape');
 	f2.add(model_params, 'shape1', -1, 1).name('Shape 1').onChange(function (value) {updateModel(model_params)});
+
+	var f3 = gui.addFolder('Texture');
+	f3.add(model_params, 'tex1', -1, 1).name('Tex 1').onChange(function (value) {updateModel(model_params)});
+
 	updateModel(model_params)
 }
 
@@ -138,57 +143,41 @@ const animate = function () {
 	requestAnimationFrame( animate );
 
 	position.needsUpdate = true;
-	// colours.needsUpdate = true
+	colours.needsUpdate = true
 	controls.update();
 	renderer.render( scene, camera );
 };
 
-// animate();
-// renderer.render( scene, camera );
-
 // Load our model.
 const sess = new onnx.InferenceSession();
-const loadingModelPromise = sess.loadModel("./find-demo-model/model.onnx");
+const loadingModelPromise = sess.loadModel("./find-demo-model/model_v2.onnx");
 
 async function updateModel(model_params) {
-  // Get the predictions model offsets.
-  //   const points = new onnx.Tensor(new Float32Array(template_vertices.array), "float32")
-	var col, face
-    for (let i=0; i< 10; i++) {
-        const shapevec = new onnx.Tensor(new Array(100).fill(0), "float32", [1, 100])
-        const texvec = new onnx.Tensor(new Array(100).fill(0), "float32", [1, 100])
-        const posevec = new onnx.Tensor(new Array(100).fill(0), "float32", [1, 100])
-        const points = new onnx.Tensor([template_vertices.getX(i), template_vertices.getY(i), template_vertices.getZ(i)], "float32", [1, 3])
+	// Update the FIND model with the current parameters
 
-        const outputMap = await sess.run([points, shapevec, texvec, posevec])
+	const N = position.count
+	const shapevec = new onnx.Tensor(new Array(100*N).fill(model_params['shape1']), "float32", [N, 100])
+	const texvec = new onnx.Tensor(new Array(100*N).fill(model_params['tex1']), "float32", [N, 100])
+	const posevec = new onnx.Tensor(new Array(100*N).fill(0), "float32", [N, 100])
+	const points = new onnx.Tensor(template_vertices.array.slice(0, 3*N), "float32", [N, 3])
 
-        var disp = outputMap.get('disp')
-        var col_val = outputMap.get('Col')
 
-        // position.setX(i, 0)
-        // position.setY(i, 0)
-        // position.setZ(i, 0)
+	var startTime = performance.now()
+	const outputMap = await sess.run([points, shapevec, texvec, posevec])
+	var endTime = performance.now()
+	console.log(`Network eval for N=${N} points took ${endTime - startTime} milliseconds`)
 
+	var disp = outputMap.get('disp')
+	var col_val = outputMap.get('col')
+
+    for (let i=0; i<N; i++) {
 		// Colour vertex
-		// col = new THREE.Color( 0xffffff );
-		// col.setRGB( col_val[0], col_val[1], col_val[2] );
-		// geometry.colors[i] = col; // use this array for convenience
+		position.setXYZ(i, template_vertices.getX(i) + disp.get(i,0),
+			template_vertices.getY(i) + disp.get(i,1),
+			template_vertices.getZ(i) + disp.get(i,2))
+		colours.setXYZ(i, col_val.get(i,0), col_val.get(i,1), col_val.get(i,2) );
 
     }
-
-	// copy the colors to corresponding positions
-	//     in each face's vertexColors array.
-	// var numberOfSides, vertexIndex
-	// for ( var i = 0; i < geometry.index.length; i++ )
-	// {
-	// 	face = geometry.index[ i ];
-	// 	numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
-	// 	for( var j = 0; j < numberOfSides; j++ )
-	// 	{
-	// 		vertexIndex = face[ faceIndices[ j ] ];
-	// 		face.vertexColors[ j ].setHex(color.setHex( Math.random() * 0xffffff )) // cubeGeometry.colors[ vertexIndex ];
-	// 	}
-	// }
 }
 
 loadingModelPromise.then(() => {
