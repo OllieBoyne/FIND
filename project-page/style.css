@@ -1,0 +1,10 @@
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.scaled_center_img {
+  width: auto !important; /*Keep the aspect ratio of the image*/
+  /*height: 200px !important;*/
+  margin: 0 auto 1em auto; /*Center the image*/
+}

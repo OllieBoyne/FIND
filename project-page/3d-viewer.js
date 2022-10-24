@@ -32,22 +32,25 @@ light.position.set( 0.1, 0, 1 );
 scene.add( light );
 
 let geometry
+
+// flags to validate loading
 var obj_loaded = false
-let object
-const loader = new OBJLoader()
+var json_loaded = false
 
 fetch('./find-demo-model/template.obj').then(response => response.text()).then(text => read_obj(text)).then(setupScene)
-
-
-// loader.load('./find-demo-model/template.obj',
-// 	function(obj) {object=obj; scene.add(obj); setupScene(obj); obj_loaded = true})
-	// function ( xhr ) {console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );},
-	// function ( error ) {console.log( 'An error happened' );})
+fetch('./find-demo-model/latents.json').then(response => response.text()).then(text => read_json(text))
 
 let position, colours
 let template_vertices
 let obj_data
 var gui = new GUI();
+var folders = {}
+
+function duplicate(array, N){
+	// Stack array N times,
+	//eg [2,3], N=5 -> [2,3,2,3,2,3,2,3,2,3]
+	return Array(N).fill(array).flat()
+}
 
 function read_obj(objText) {
 	// Read OBJ to vertices and faces (does NOT support OBJ files with vertex normals/texture coordinates currently)
@@ -80,6 +83,21 @@ function read_obj(objText) {
 
 }
 
+const pca_components = 3
+const latent_keys = ['shape', 'pose', 'tex']
+var latent_means = {}
+var latent_vecs = {}
+var latent_stds = {}
+
+function read_json(jsonText){
+	const data = JSON.parse(jsonText)
+	for (const latent of latent_keys){
+		latent_means[latent] = data[latent]['mean']
+		latent_vecs[latent] = data[latent]["V"]
+		latent_stds[latent] = data[latent]['stddev']
+	}
+}
+
 function setupScene() {
 
 	obj_loaded = true
@@ -93,11 +111,6 @@ function setupScene() {
 	position = geometry.getAttribute('position');
 	colours = geometry.getAttribute('color')
 
-	// geometry.setAttribute("color", new THREE.BufferAttribute(new Float32Array(position.count * 3).fill(1), 3))
-	// colours = geometry.getAttribute('color');
-	// const material = new THREE.MeshBasicMaterial({color: 0x008888});
-	// const material = new THREE.MeshBasicMaterial({ vertexColors: true })
-
 	const material = new THREE.MeshPhongMaterial( {
 					side: THREE.DoubleSide,
 					vertexColors: true
@@ -106,21 +119,29 @@ function setupScene() {
 	mesh = new THREE.Mesh(geometry, material);
 	scene.add(mesh);
 
-	camera.position.z = 0.3;
-
 	// gui
-	const params = {X: 1, Y: 1, Z: 1};
+	const params = {X: 1, Y: 1, Z: 1, cam_dist: 0.3};
 
-	var scale_folder = gui.addFolder('Scale');
+	camera.position.z = params['cam_dist'];
 
-	scale_folder.add(params, 'X', 0.5, 2).name('Scale X').onChange(function (value) {
+	folders['scale'] = gui.addFolder('Scale');
+	folders['shape'] = gui.addFolder('Shape');
+	folders['pose'] = gui.addFolder('Pose');
+	folders['tex'] = gui.addFolder('Texture');
+	folders['settings'] = gui.addFolder('Viewing Settings');
+
+	folders['scale'].add(params, 'X', 0.5, 2).name('Scale X').onChange(function (value) {
 			for (let j = 0; j < position.count; j++) {position.setX(j, template_vertices.getX(j) * value)}})
 
-	scale_folder.add(params, 'Y', 0.5, 2).name('Scale Y').onChange(function (value) {
+	folders['scale'].add(params, 'Y', 0.5, 2).name('Scale Y').onChange(function (value) {
 			for (let j = 0; j < position.count; j++) {position.setY(j, template_vertices.getY(j) * value)}})
 
-	scale_folder.add(params, 'Z', 0.5, 2).name('Scale Z').onChange(function (value) {
+	folders['scale'].add(params, 'Z', 0.5, 2).name('Scale Z').onChange(function (value) {
 			for (let j = 0; j < position.count; j++) {position.setZ(j, template_vertices.getZ(j) * value)}})
+
+	folders['settings'].add(params, 'cam_dist', 0.2, 0.5).name('View distance').onChange(function(value){
+		camera.position.z = value
+	})
 
 	template_vertices = position.clone()
 	animate()
@@ -129,12 +150,15 @@ function setupScene() {
 
 
 function setupModel(){
-	const model_params = {shape1: 0, tex1:0};
-	var f2 = gui.addFolder('Shape');
-	f2.add(model_params, 'shape1', -1, 1).name('Shape 1').onChange(function (value) {updateModel(model_params)});
+	const model_params = {};
 
-	var f3 = gui.addFolder('Texture');
-	f3.add(model_params, 'tex1', -1, 1).name('Tex 1').onChange(function (value) {updateModel(model_params)});
+	const f = function (value) {updateModel(model_params)}
+	for (var i=1; i<4; i++) {
+		for (const k of ['shape', 'tex', 'pose']) {
+			model_params[k + i] = 0
+			folders[k].add(model_params, k + i, -3, 3).name('PC ' + i).onChange(f);
+		}
+	}
 
 	updateModel(model_params)
 }
@@ -150,20 +174,31 @@ const animate = function () {
 
 // Load our model.
 const sess = new onnx.InferenceSession();
-const loadingModelPromise = sess.loadModel("./find-demo-model/model_v2.onnx");
+const loadingModelPromise = sess.loadModel("./find-demo-model/model.onnx");
 
 async function updateModel(model_params) {
 	// Update the FIND model with the current parameters
 
 	const N = position.count
-	const shapevec = new onnx.Tensor(new Array(100*N).fill(model_params['shape1']), "float32", [N, 100])
-	const texvec = new onnx.Tensor(new Array(100*N).fill(model_params['tex1']), "float32", [N, 100])
-	const posevec = new onnx.Tensor(new Array(100*N).fill(0), "float32", [N, 100])
 	const points = new onnx.Tensor(template_vertices.array.slice(0, 3*N), "float32", [N, 3])
 
+	var vecs = {}
+	for (var k of latent_keys) {
+
+		var arr = latent_means[k]
+		for (var i = 0; i < pca_components; i++) {
+			var comp = latent_vecs[k][i]
+			var mag = model_params[k + (i + 1)] * latent_stds[k][i]
+			arr = arr.map((a, j) => a + comp[j] * mag);
+		}
+
+		vecs[k] = new onnx.Tensor(duplicate(arr, N), "float32", [N, 100])
+
+	}
+	// console.log(texvec_arr.reduce((partialSum, a) => partialSum + a, 0))
 
 	var startTime = performance.now()
-	const outputMap = await sess.run([points, shapevec, texvec, posevec])
+	const outputMap = await sess.run([points, vecs['shape'], vecs['tex'], vecs['pose']])
 	var endTime = performance.now()
 	console.log(`Network eval for N=${N} points took ${endTime - startTime} milliseconds`)
 

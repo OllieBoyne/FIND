@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FIND</title>
+    <link rel="shortcut icon" type="image/jpg" href="image/logo.ico" />
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/49f46e7382.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <nav class="navbar is-light" role="navigation" aria-label="main navigation">
+        <div class="container is-max-desktop">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="https://www.cam.ac.uk/">
+                    <img src="image/logo/Cam_bw.png" alt="University of Cambridge" style="height: 2.0rem;">
+                </a>
+                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+            <div id="navbarBasicExample" class="navbar-menu">
+                <div class="navbar-end">
+                    <a class="navbar-item navbar-right" href="https://bmvc2022.org/">
+                        <img src="image/logo/bmvc-logo.png" alt="BMVC 2022" style="height: 2.0rem;">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <section class="section">
+        <div class="container is-max-desktop">
+<!--            <div class="columns">-->
+<!--                <div class="column align-center is-hidden-mobile">-->
+<!--                    <img src="image/irondepth/irondepth-pad.png" />-->
+<!--                </div>-->
+<!--                <div class="column align-center is-hidden-desktop is-hidden-tablet">-->
+<!--                    <img src="image/irondepth/irondepth.png" />-->
+<!--                </div>-->
+<!--            </div>-->
+            <h1 class="title is-2 is-size-3-mobile is-spaced has-text-centered">
+                FIND: An Unsupervised Implicit 3D Model of Articulated Human Feet
+            </h1>
+            <p class="subtitle is-5 has-text-centered has-text-grey">
+                BMVC 2022
+            </p>
+            <p class="subtitle is-6 has-text-centered authors mt-5" style="line-height: 1.5;">
+                <span>
+                    Oliver Boyne
+                </span>
+                <span>
+                    <a href="http://www.jjcvision.com">James Charles</a>
+                </span>
+                <span>
+                    <a href="https://mi.eng.cam.ac.uk/~cipolla/">Roberto&nbsp;Cipolla</a>
+                </span>
+            </p>
+            <p class="subtitle is-6 has-text-centered authors mt-5" style="line-height: 1.5;">
+                <span>University of Cambridge</span>
+            </p>
+        </div>
+<!--        <div class="container is-max-desktop has-text-centered mt-5">-->
+<!--            <a href="google.com" class="button is-rounded is-link is-light mr-2">-->
+<!--                <span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span>-->
+<!--            </a>-->
+
+<!--            <a href="https://github.com/OllieBoyne/FIND" class="button is-rounded is-link is-light">-->
+<!--                <span class="icon"><i class="fab fa-github"></i></span>-->
+<!--                <span>arXiV</span>-->
+<!--            </a>-->
+
+<!--            <a href="https://github.com/OllieBoyne/Foot3D" class="button is-rounded is-link is-light">-->
+<!--                <span class="icon"><i class="fab fa-github"></i></span>-->
+<!--                <span>XYTEST</span>-->
+<!--            </a>-->
+<!--        </div>-->
+
+        <!-- LINKS -->
+        <div class="container is-max-desktop has-text-centered mt-5">
+            <table class="center">
+                <tr>
+                    <td><a href="google.com" class="button is-rounded is-link is-light mr-2">
+                <span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span>
+            </a></td>
+                    <td> <a href="https://github.com/OllieBoyne/FIND" class="button is-rounded is-link is-light mr-2">
+                <span class="icon"><i class="fab fa-github"></i></span><span>Code</span>
+            </a></td>
+                    <td> <a href="https://github.com/OllieBoyne/Foot3D" class="button is-rounded is-link is-light mr-2">
+                        <span class="icon"><img src="image/find/foot3d icon/foot3d-icon-coloured-print.png"/></span><span>Dataset</span></a> </td>
+<!--                    -->
+                </tr>
+            </table>
+        </div>
+    </section>
+<!--    <section class="section pt-0">-->
+<!--        <div class="container is-max-desktop is-hidden-mobile">-->
+<!--            <h1 class="title is-4">-->
+<!--                Video-->
+<!--            </h1>-->
+<!--&lt;!&ndash;            <iframe style="display: block; margin: auto;" width="768" height="432" src="https://www.youtube.com/embed/mf8keH9brF0" frameborder="0" allowfullscreen></iframe>&ndash;&gt;-->
+<!--        </div>-->
+
+<!--    </section>-->
+
+    <section class="section pt-0">
+        <div class="container is-max-desktop">
+<!--            <h1 class="title is-4">-->
+<!--                Motivation-->
+<!--            </h1>-->
+            <div class="content has-text-justified-desktop">
+                <p>
+                Parameterised models of human bodies have been developed thoroughly. This extends to more detailed models of hands and faces [sources]. However, the foot has not been explored in detail - available data is extremely limited, and existing models are low fidelity, and do not capture pose.</p>
+
+                <p>
+                    We improve on this by developing <b>FIND</b>, an implicit foot model, which models shape, pose and texture as deformation fields along the surface of a template foot. We improve the available data by collecting <b>Foot3D</b> - a dataset made available to the research community.
+                </p>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="section pt-0">
+        <div class="container is-max-desktop">
+            <h1 class="title is-4">
+                Dataset
+            </h1>
+            <figure class="image">
+                <img src="image/find/normal_v1.png" class="scaled_center_img" style="height: 100px"/>
+                <img src="image/find/foot3d-spins.gif" class="scaled_center_img" style="height: 200px"/>
+            </figure>
+            <div class="content has-text-justified-desktop">
+                <p></p>
+                We release Foot3D, a dataset of high quality, textured scanned feet in a variety of poses. You can find out more about it <a href="https://github.com/OllieBoyne/Foot3D"> here</a>.
+            </div>
+        </div>
+    </section>
+
+
+
+    <section class="section pt-0">
+        <div class="container is-max-desktop">
+            <h1 class="title is-4">
+                Method
+            </h1>
+
+            <div class="content has-text-justified-desktop">
+                <p></p>
+                <p>We construct ...
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="section pt-0">
+        <div class="container is-max-desktop">
+            <h1 class="title is-4">
+                Results
+            </h1>
+
+            <div class="content has-text-justified-desktop">
+                <p></p>
+                <p>We show improvement over a PCA baseline ...
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="section pt-0">
+        <div class="container is-max-desktop">
+            <h1 class="title is-4">
+                Acknowledgements
+            </h1>
+
+            <div class="content has-text-justified-desktop">
+                If you make use of this dataset, please cite the following paper:
+            </div>
+
+        </div>
+    </section>
+
+<!--    <section class="section pt-0">-->
+<!--        <div class="container is-max-desktop">-->
+<!--            <h1 class="title is-4">-->
+<!--                BibTeX-->
+<!--            </h1>-->
+<!--            <pre>-->
+<!--                -->
+<!--            </pre>-->
+<!--        </div>-->
+<!--    </section>-->
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>
+                <img src="image/logo/Cam_bw.png" class="mt-5" alt="University of Cambridge" style="height: 2rem;">
+            </p>
+        </div>
+    </footer>
+</body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // Get all "navbar-burger" elements
+        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+        // Check if there are any navbar burgers
+        if ($navbarBurgers.length > 0) {
+
+            // Add a click event on each of them
+            $navbarBurgers.forEach(el => {
+                el.addEventListener('click', () => {
+
+                    // Get the target from the "data-target" attribute
+                    const target = el.dataset.target;
+                    const $target = document.getElementById(target);
+
+                    // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+                    el.classList.toggle('is-active');
+                    $target.classList.toggle('is-active');
+
+                });
+            });
+        }
+    });
+</script>
+
+</html>
