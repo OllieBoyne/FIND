@@ -88,7 +88,7 @@ function read_obj(objText) {
 
 const pca_components = 3
 const latent_keys = ['shape', 'pose', 'tex']
-const settings = {'show_template': false, 'reset_model': reset_model, cam_dist: 0.3}
+const settings = {'show_template': false, 'footedness': 'Left', 'reset_model': reset_model, cam_dist: 0.3}
 var latent_means = {}
 var latent_vecs = {}
 var latent_stds = {}
@@ -109,6 +109,13 @@ function reset_model(){
 		model_params[k] = 0
 	}
 	updateModel(model_params)
+}
+
+function set_footedness(footedness){
+	if (footedness === 'Left'){
+		mesh.scale.y = 1;
+	}
+	else {mesh.scale.y = -1}
 }
 
 function setupScene() {
@@ -154,6 +161,7 @@ function setupScene() {
 	})
 
 	folders['settings'].add(settings, 'show_template').name('Show template').onChange(function(value){updateModel(model_params)})
+	folders['settings'].add(settings, 'footedness', ['Left', 'Right']).name('Foot').onChange(set_footedness)
 	folders['settings'].add(settings, 'reset_model').name('Reset model')
 
 	document.getElementById('Num verts').innerText = position.count
