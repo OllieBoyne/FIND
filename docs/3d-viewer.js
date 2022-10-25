@@ -26,8 +26,11 @@ controls.enablePan = false;
 controls.enableDamping = true;
 
 const light = new THREE.HemisphereLight( 0xffffff, 0x080808, 1. );
+const light2 = new THREE.HemisphereLight( 0xffffff, 0x080808, 0.4 );
 light.position.set( 0.1, 0, 1 );
+light2.position.set( 0, 0, -1 );
 scene.add( light );
+scene.add( light2 )
 
 let geometry
 

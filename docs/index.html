@@ -151,28 +151,30 @@
 
             <div class="content has-text-justified-desktop">
                 <p></p>
-                <p>We construct ...
+                <p>We construct a co-ordinate based model, which defines, for every point along the surface of a template mesh, a deformation and a colour value.
                 </p>
+                <p>This model takes as input a 3D point on the surface, and latent codes describing the shape, articulation (pose) and texture of the foot.</p>
+                <p>At inference time, we sample every point along the surface of a chosen template mesh to produce a target foot.</p>
             </div>
 
         </div>
     </section>
 
-    <section class="section pt-0">
-        <div class="container is-max-desktop">
-            <h1 class="title is-4">
-                Results
-            </h1>
+<!--    <section class="section pt-0">-->
+<!--        <div class="container is-max-desktop">-->
+<!--            <h1 class="title is-4">-->
+<!--                Results-->
+<!--            </h1>-->
 
-            <div class="content has-text-justified-desktop">
-                <p></p>
-                <p>We show improvement over a PCA baseline ...
-                </p>
-            </div>
+<!--            <div class="content has-text-justified-desktop">-->
+<!--                <p></p>-->
+<!--                <p>We show improvement over a PCA baseline ...-->
+<!--                </p>-->
+<!--            </div>-->
 
-        </div>
+<!--        </div>-->
 
-    </section>
+<!--    </section>-->
 
     <section class="section pt-0">
         <div class="container is-max-desktop">
@@ -181,8 +183,16 @@
             </h1>
 
             <div class="content has-text-justified-desktop">
-                If you make use of this dataset, please cite the following paper:
+                If you make use of this project, please cite the following paper:
             </div>
+
+            <pre>@inproceedings{boyne2022find,
+            title={FIND: An Unsupervised Implicit 3D Model of Articulated Human Feet},
+            author={Boyne, Oliver and Charles, James and Cipolla, Roberto},
+            booktitle={British Machine Vision Conference (BMVC)},
+            year={2022}
+        }
+            </pre>
 
         </div>
     </section>
