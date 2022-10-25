@@ -10,7 +10,7 @@ import { GUI } from './threejs-light/lil-gui.module.min.js';
 let mesh
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.001, 1 );
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
@@ -88,9 +88,11 @@ function read_obj(objText) {
 
 const pca_components = 3
 const latent_keys = ['shape', 'pose', 'tex']
+const settings = {'show_template': false, 'reset_model': reset_model, cam_dist: 0.3}
 var latent_means = {}
 var latent_vecs = {}
 var latent_stds = {}
+const model_params = {scale_X: 1, scale_Y: 1, scale_Z: 1};
 
 function read_json(jsonText){
 	const data = JSON.parse(jsonText)
@@ -99,6 +101,14 @@ function read_json(jsonText){
 		latent_vecs[latent] = data[latent]["V"]
 		latent_stds[latent] = data[latent]['stddev']
 	}
+	json_loaded = true
+}
+
+function reset_model(){
+	for (const k of Object.keys(model_params)) {
+		model_params[k] = 0
+	}
+	updateModel(model_params)
 }
 
 function setupScene() {
@@ -121,30 +131,30 @@ function setupScene() {
 
 	mesh = new THREE.Mesh(geometry, material);
 	scene.add(mesh);
+	camera.position.z = settings['cam_dist'];
 
-	// gui
-	const params = {X: 1, Y: 1, Z: 1, cam_dist: 0.3};
-
-	camera.position.z = params['cam_dist'];
-
-	folders['scale'] = gui.addFolder('Scale');
+	// folders['scale'] = gui.addFolder('Scale');
 	folders['shape'] = gui.addFolder('Shape');
 	folders['pose'] = gui.addFolder('Pose');
 	folders['tex'] = gui.addFolder('Texture');
 	folders['settings'] = gui.addFolder('Viewing Settings');
+	console.log(folders)
 
-	folders['scale'].add(params, 'X', 0.6, 1.4).name('Scale X').onChange(function (value) {
-			for (let j = 0; j < position.count; j++) {position.setX(j, template_vertices.getX(j) * value)}})
+	// // folders['scale'].add(params, 'scale_X', 0.6, 1.4).name('Scale X').onChange(function (value) {
+	// 		for (let j = 0; j < position.count; j++) {position.setX(j, template_vertices.getX(j) * value)}}).listen(reset_model)
+	//
+	// folders['scale'].add(params, 'scale_Y', 0.6, 1.4).name('Scale Y').onChange(function (value) {
+	// 		for (let j = 0; j < position.count; j++) {position.setY(j, template_vertices.getY(j) * value)}}).listen(reset_model)
+	//
+	// folders['scale'].add(params, 'scale_Z', 0.6, 1.4).name('Scale Z').onChange(function (value) {
+	// 		for (let j = 0; j < position.count; j++) {position.setZ(j, template_vertices.getZ(j) * value)}}).listen(reset_model)
 
-	folders['scale'].add(params, 'Y', 0.6, 1.4).name('Scale Y').onChange(function (value) {
-			for (let j = 0; j < position.count; j++) {position.setY(j, template_vertices.getY(j) * value)}})
-
-	folders['scale'].add(params, 'Z', 0.6, 1.4).name('Scale Z').onChange(function (value) {
-			for (let j = 0; j < position.count; j++) {position.setZ(j, template_vertices.getZ(j) * value)}})
-
-	folders['settings'].add(params, 'cam_dist', 0.2, 0.5).name('View distance').onChange(function(value){
+	folders['settings'].add(settings, 'cam_dist', 0.2, 0.5).name('View distance').onChange(function(value){
 		camera.position.z = value
 	})
+
+	folders['settings'].add(settings, 'show_template').name('Show template').onChange(function(value){updateModel(model_params)})
+	folders['settings'].add(settings, 'reset_model').name('Reset model')
 
 	document.getElementById('Num verts').innerText = position.count
 	document.getElementById('Num faces').innerText = obj_data.faces.length / 3
@@ -156,13 +166,12 @@ function setupScene() {
 
 
 function setupModel(){
-	const model_params = {};
 
 	const f = function (value) {updateModel(model_params)}
 	for (var i=1; i<4; i++) {
 		for (const k of ['shape', 'tex', 'pose']) {
 			model_params[k + i] = 0
-			folders[k].add(model_params, k + i, -3, 3).name('PC ' + i).onChange(f);
+			folders[k].add(model_params, k + i, -3, 3).name('PC ' + i).onChange(f).listen(reset_model);
 		}
 	}
 
@@ -186,7 +195,7 @@ async function updateModel(model_params) {
 	// Update the FIND model with the current parameters
 
 	const N = position.count
-	const points = new onnx.Tensor(template_vertices.array.slice(0, 3*N), "float32", [N, 3])
+	const points = new onnx.Tensor(template_vertices.array, "float32", [N, 3])
 
 	var vecs = {}
 	for (var k of latent_keys) {
@@ -201,7 +210,6 @@ async function updateModel(model_params) {
 		vecs[k] = new onnx.Tensor(duplicate(arr, N), "float32", [N, 100])
 
 	}
-	// console.log(texvec_arr.reduce((partialSum, a) => partialSum + a, 0))
 
 	var startTime = performance.now()
 	const outputMap = await sess.run([points, vecs['shape'], vecs['tex'], vecs['pose']])
@@ -213,21 +221,32 @@ async function updateModel(model_params) {
 	var col_val = outputMap.get('col')
 
     for (let i=0; i<N; i++) {
-		// Colour vertex
-		position.setXYZ(i, template_vertices.getX(i) + disp.get(i,0),
-			template_vertices.getY(i) + disp.get(i,1),
-			template_vertices.getZ(i) + disp.get(i,2))
-		colours.setXYZ(i, col_val.get(i,0), col_val.get(i,1), col_val.get(i,2) );
-
+		if (settings['show_template']){
+			// Show original template vertices
+			position.setXYZ(i, template_vertices.getX(i),
+				template_vertices.getY(i),
+				template_vertices.getZ(i))
+			colours.setXYZ(i, 0.5, 0.5, 0.5)
+		}
+		else {
+			// Colour and displace vertex
+			position.setXYZ(i, template_vertices.getX(i) + disp.get(i, 0),
+				template_vertices.getY(i) + disp.get(i, 1),
+				template_vertices.getZ(i) + disp.get(i, 2))
+			colours.setXYZ(i, col_val.get(i, 0), col_val.get(i, 1), col_val.get(i, 2));
+		}
     }
 }
 
 loadingModelPromise.then(() => {
-	console.log("Loaded ONNX model.")
 	if (!obj_loaded){
     	console.log("OBJ not loaded - waiting...")}
 	while(!obj_loaded){}
-	console.log("OBJ loaded!")
+	if (!json_loaded){
+    	console.log("JSON not loaded - waiting...")}
+	while(!json_loaded){}
+
+	console.log("OBJ, JSON, ONNX loaded.")
 	setupModel()
 
 })
