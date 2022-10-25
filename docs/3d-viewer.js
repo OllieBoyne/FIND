@@ -14,7 +14,9 @@ const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.inner
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
+
+const container = document.getElementById( 'renderer' );
+container.appendChild( renderer.domElement );
 
 function render() {renderer.render( scene, camera );}
 
@@ -131,18 +133,21 @@ function setupScene() {
 	folders['tex'] = gui.addFolder('Texture');
 	folders['settings'] = gui.addFolder('Viewing Settings');
 
-	folders['scale'].add(params, 'X', 0.5, 2).name('Scale X').onChange(function (value) {
+	folders['scale'].add(params, 'X', 0.6, 1.4).name('Scale X').onChange(function (value) {
 			for (let j = 0; j < position.count; j++) {position.setX(j, template_vertices.getX(j) * value)}})
 
-	folders['scale'].add(params, 'Y', 0.5, 2).name('Scale Y').onChange(function (value) {
+	folders['scale'].add(params, 'Y', 0.6, 1.4).name('Scale Y').onChange(function (value) {
 			for (let j = 0; j < position.count; j++) {position.setY(j, template_vertices.getY(j) * value)}})
 
-	folders['scale'].add(params, 'Z', 0.5, 2).name('Scale Z').onChange(function (value) {
+	folders['scale'].add(params, 'Z', 0.6, 1.4).name('Scale Z').onChange(function (value) {
 			for (let j = 0; j < position.count; j++) {position.setZ(j, template_vertices.getZ(j) * value)}})
 
 	folders['settings'].add(params, 'cam_dist', 0.2, 0.5).name('View distance').onChange(function(value){
 		camera.position.z = value
 	})
+
+	document.getElementById('Num verts').innerText = position.count
+	document.getElementById('Num faces').innerText = obj_data.faces.length / 3
 
 	template_vertices = position.clone()
 	animate()
@@ -201,7 +206,8 @@ async function updateModel(model_params) {
 	var startTime = performance.now()
 	const outputMap = await sess.run([points, vecs['shape'], vecs['tex'], vecs['pose']])
 	var endTime = performance.now()
-	console.log(`Network eval for N=${N} points took ${endTime - startTime} milliseconds`)
+	document.getElementById('Net eval time').innerText = (endTime - startTime).toFixed(0) + " ms"
+
 
 	var disp = outputMap.get('disp')
 	var col_val = outputMap.get('col')

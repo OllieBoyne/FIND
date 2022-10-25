@@ -4,11 +4,39 @@
         <title>FIND Demo</title>
         <style>
             body { margin: 0; }
+            .stats_text {
+				position: absolute;
+				bottom: 1em;
+				width: auto;
+				color: white;
+				z-index: 10;
+				display: block;
+				text-align: right;
+                right: 1em;
+                font-family: Arial, Helvetica, sans-serif;
+
+                margin-right: 0;
+                margin-left: auto;
+			}
         </style>
 		<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
     </head>
-    <body>        <script src="3d-viewer.js" type="module"></script>
+    <body>
+    <div id="container">
+			<div id="container_textbox">
+                <table class="stats_text">
+                    <th>Stats</th>
+                    <tr><td>Num Verts</td><td id="Num verts"></td></tr>
+                    <tr><td>Num Faces</td><td id="Num faces"></td></tr>
+                    <tr><td>Network</td><td id="Net eval time"></td></tr>
+                </table>
+
+            </div>
+			<div id="renderer"></div>
+    </div>
+
+    <script src="3d-viewer.js" type="module"></script>
         </script>
     </body>
 </html>
