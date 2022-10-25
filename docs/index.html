@@ -81,7 +81,7 @@
                 </tr>
             </table>
         </div>
-    </section>
+
 
     <div class="container is-max-desktop has-text-centered mt-5">
         <a href="https://ollieboyne.github.io/FIND/3d-viewer">
@@ -89,6 +89,7 @@
             <img src="image/find/demo-placeholder.png" class="scaled_center_img" style="height: 150px"/>
         </a>
     </div>
+    </section>
 <!--        </div>-->
 <!--    </section>-->
 
@@ -99,7 +100,7 @@
 <!--            </h1>-->
             <div class="content has-text-justified-desktop">
                 <p>
-                    Detailed, parameterised models for <a href="https://smpl.is.tue.mpg.de">human bodies</a>, <a href="https://mano.is.tue.mpg.de">hands</a> and <a href="https://flame.is.tue.mpg.de">faces</a> have been developed thoroughly.However, the foot has not been explored in detail - available data is extremely limited, and existing models are low fidelity, and do not capture articulation.</p>
+                    Detailed, parameterised models for human <a href="https://smpl.is.tue.mpg.de">bodies</a>, <a href="https://mano.is.tue.mpg.de">hands</a> and <a href="https://flame.is.tue.mpg.de">faces</a> have been developed thoroughly. However, the foot has not been explored in detail - available data is extremely limited, and existing models are low fidelity, and do not capture articulation.</p>
 
                 <p>
                     We improve on this by developing <b>FIND</b>, an implicit foot model, which models shape, pose and texture as deformation fields along the surface of a template foot. We improve the available data by collecting <b>Foot3D</b> - a dataset made available to the research community.
@@ -135,7 +136,7 @@
 
             <div class="content has-text-justified-desktop">
                 <p></p>
-                <p>We construct a co-ordinate based model, which defines, for every point along the surface of a template mesh, a deformation and a colour value.
+                <p>We construct a coordinate based model, which defines, for every point along the surface of a template mesh, a deformation and a colour value.
                 </p>
                 <p>This model takes as input a 3D point on the surface, and latent codes describing the shape, articulation (pose) and texture of the foot.</p>
                 <p>At inference time, we sample every point along the surface of a chosen template mesh to produce a target foot.</p>
@@ -144,21 +145,26 @@
         </div>
     </section>
 
-<!--    <section class="section pt-0">-->
-<!--        <div class="container is-max-desktop">-->
-<!--            <h1 class="title is-4">-->
-<!--                Results-->
-<!--            </h1>-->
+    <section class="section pt-0">
+        <div class="container is-max-desktop">
+            <h1 class="title is-4">
+                Results
+            </h1>
+            <figure class="image">
+                <img src="image/find/results/qual_1.png" class="scaled_center_img" style="height: 200px"/>
+                <img src="image/find/results/quant_1.png" class="scaled_center_img" style="height: 100px"/>
+            </figure>
 
-<!--            <div class="content has-text-justified-desktop">-->
-<!--                <p></p>-->
-<!--                <p>We show improvement over a PCA baseline ...-->
-<!--                </p>-->
-<!--            </div>-->
 
-<!--        </div>-->
+            <div class="content has-text-justified-desktop">
+                <p></p>
+                <p>We fit our model to a selection of 3D validation scans, and compare the reconstruction quality to a baseline PCA model (produced from <a href="https://openaccess.thecvf.com/content_cvpr_2018/papers/Yang_FoldingNet_Point_Cloud_CVPR_2018_paper.pdf">FoldingNet</a>). We show significant qualitative and quantitative improvements.
+                </p>
+            </div>
 
-<!--    </section>-->
+        </div>
+
+    </section>
 
     <section class="section pt-0">
         <div class="container is-max-desktop">
