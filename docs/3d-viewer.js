@@ -94,6 +94,10 @@ var latent_vecs = {}
 var latent_stds = {}
 const model_params = {scale_X: 1, scale_Y: 1, scale_Z: 1};
 
+// Save examples of latent variables
+const pose_targets = {'T-Pose':0, 'Toe Extension': 0, 'Dorsiflex':0}
+var poses = {}
+
 function read_json(jsonText){
 	const data = JSON.parse(jsonText)
 	for (const latent of latent_keys){
@@ -101,6 +105,17 @@ function read_json(jsonText){
 		latent_vecs[latent] = data[latent]["V"]
 		latent_stds[latent] = data[latent]['stddev']
 	}
+
+	for (const pose_example of data['pose_examples']){
+		var pose_str = pose_example['pose'].join(" ")
+		if (Object.keys(pose_targets).includes(pose_str)){
+			if (pose_targets[pose_str] === 0){
+				pose_targets[pose_str] = 1 // Mark as found
+				poses[pose_str] = pose_example['pca']
+			}
+		}
+	}
+
 	json_loaded = true
 }
 
@@ -116,6 +131,15 @@ function set_footedness(footedness){
 		mesh.scale.y = 1;
 	}
 	else {mesh.scale.y = -1}
+}
+
+function set_example_pose(pose_str){
+	// Given a pose string of an example pose, set this to be the active pose
+	const pca_params = poses[pose_str]
+	for (var i=1; i < 1 + pca_components; i++) {
+		model_params['pose' + i] = pca_params[i-1]
+	}
+	updateModel(model_params)
 }
 
 function setupScene() {
@@ -145,7 +169,6 @@ function setupScene() {
 	folders['pose'] = gui.addFolder('Pose');
 	folders['tex'] = gui.addFolder('Texture');
 	folders['settings'] = gui.addFolder('Viewing Settings');
-	console.log(folders)
 
 	// // folders['scale'].add(params, 'scale_X', 0.6, 1.4).name('Scale X').onChange(function (value) {
 	// 		for (let j = 0; j < position.count; j++) {position.setX(j, template_vertices.getX(j) * value)}}).listen(reset_model)
@@ -176,12 +199,20 @@ function setupScene() {
 function setupModel(){
 
 	const f = function (value) {updateModel(model_params)}
-	for (var i=1; i<4; i++) {
+	for (var i=1; i<1 + pca_components; i++) {
 		for (const k of ['shape', 'tex', 'pose']) {
 			model_params[k + i] = 0
 			folders[k].add(model_params, k + i, -3, 3).name('PC ' + i).onChange(f).listen(reset_model);
 		}
 	}
+
+	var pose_options = {}
+	folders['selected_pose'] = folders['pose'].addFolder('Select Pose')
+	for (const example_pose of Object.keys(pose_targets)){
+		pose_options[example_pose] = function() {set_example_pose(example_pose)}
+		folders['selected_pose'].add(pose_options, example_pose).name(example_pose)
+	}
+
 
 	updateModel(model_params)
 }
