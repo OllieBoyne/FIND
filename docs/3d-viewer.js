@@ -12,7 +12,7 @@ let mesh
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.001, 1 );
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({antialias: true});
 renderer.setSize( window.innerWidth, window.innerHeight );
 
 const container = document.getElementById( 'renderer' );
@@ -88,7 +88,7 @@ function read_obj(objText) {
 
 const pca_components = 3
 const latent_keys = ['shape', 'pose', 'tex']
-const settings = {'show_template': false, 'footedness': 'Left', 'reset_model': reset_model, cam_dist: 0.3}
+const settings = {'show_template': false, 'footedness': 'Left', 'reset_model': reset_model, cam_dist: 0.3, 'show_wireframe': false}
 var latent_means = {}
 var latent_vecs = {}
 var latent_stds = {}
@@ -162,6 +162,12 @@ function setupScene() {
 
 	mesh = new THREE.Mesh(geometry, material);
 	scene.add(mesh);
+
+	var mat_wireframe = new THREE.MeshBasicMaterial({color: 0x000000, wireframe: true});
+	var wireframe = new THREE.LineSegments( geometry, mat_wireframe );
+	wireframe.visible = false
+	mesh.add( wireframe );
+
 	camera.position.z = settings['cam_dist'];
 
 	// folders['scale'] = gui.addFolder('Scale');
@@ -170,20 +176,12 @@ function setupScene() {
 	folders['tex'] = gui.addFolder('Texture');
 	folders['settings'] = gui.addFolder('Viewing Settings');
 
-	// // folders['scale'].add(params, 'scale_X', 0.6, 1.4).name('Scale X').onChange(function (value) {
-	// 		for (let j = 0; j < position.count; j++) {position.setX(j, template_vertices.getX(j) * value)}}).listen(reset_model)
-	//
-	// folders['scale'].add(params, 'scale_Y', 0.6, 1.4).name('Scale Y').onChange(function (value) {
-	// 		for (let j = 0; j < position.count; j++) {position.setY(j, template_vertices.getY(j) * value)}}).listen(reset_model)
-	//
-	// folders['scale'].add(params, 'scale_Z', 0.6, 1.4).name('Scale Z').onChange(function (value) {
-	// 		for (let j = 0; j < position.count; j++) {position.setZ(j, template_vertices.getZ(j) * value)}}).listen(reset_model)
-
 	folders['settings'].add(settings, 'cam_dist', 0.2, 0.5).name('View distance').onChange(function(value){
 		camera.position.z = value
 	})
 
 	folders['settings'].add(settings, 'show_template').name('Show template').onChange(function(value){updateModel(model_params)})
+	folders['settings'].add(settings, 'show_wireframe').name('Show wireframe').onChange(function(value){wireframe.visible = value})
 	folders['settings'].add(settings, 'footedness', ['Left', 'Right']).name('Foot').onChange(set_footedness)
 	folders['settings'].add(settings, 'reset_model').name('Reset model')
 
@@ -249,6 +247,8 @@ async function updateModel(model_params) {
 		vecs[k] = new onnx.Tensor(duplicate(arr, N), "float32", [N, 100])
 
 	}
+	// console.log('--->', vecs['shape'].data.slice(0,100), vecs['pose'].data.slice(0,100), vecs['tex'].data.slice(0,100))
+	// console.log('--->', vecs['shape'].data.slice(0,100))
 
 	var startTime = performance.now()
 	const outputMap = await sess.run([points, vecs['shape'], vecs['tex'], vecs['pose']])
