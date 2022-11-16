@@ -27,5 +27,6 @@ If you make use of our Foot3D dataset or the FIND model, please cite our work:
             author={Boyne, Oliver and Charles, James and Cipolla, Roberto},
             booktitle={British Machine Vision Conference (BMVC)},
             year={2022}
+}
 ```
 
