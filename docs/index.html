@@ -86,20 +86,41 @@
         </div>
 
 
-    <div class="container is-max-desktop has-text-centered mt-5">
+    <div class="container is-max-desktop has-text-centered mt-5", id="header_images">
 
 
 
-        <div style="width:50%;float:left">
+        <div style="width:46%;float:left;height:100%">
         <a href="https://ollieboyne.github.io/FIND/3d-viewer">
-        <img src="image/find/demo-placeholder.png" style="width:90%"/>
+        <img src="image/find/demo-placeholder.png" id="demo" style="width:100%;height:100%"/>
         </a>
         </div>
 
 
-        <div style="margin-left:50%">
-            <iframe width="90%" height=auto src="https://www.youtube.com/embed/ehp0z-u7zXg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<!--     Need to set height to demo_div_width * demo_width / demo_height  to get aspect ratios right-->
+        <div style="margin-left:54%;height:100%">
+            <iframe id="yt_video" width="100%" height=100% src="https://www.youtube.com/embed/ehp0z-u7zXg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
+
+<!--     Set up sizing for this div (including window resizing listener)-->
+        <script>
+            var i = new Image();
+            i.src = "image/find/demo-placeholder.png"
+            var aspect_ratio = i.height / i.width
+            var elem = document.getElementById("demo")
+
+            resize = function(event){
+                var width = parseFloat(elem.offsetWidth)
+                var new_height = width * aspect_ratio + "px"
+                document.getElementById("header_images").style.height = new_height
+            }
+
+            window.addEventListener('resize', resize, true)  // resize on window resize
+            resize(true) // initial resize
+
+          </script>
+
+
     </div>
 
     </section>
