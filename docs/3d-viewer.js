@@ -168,7 +168,9 @@ function setupScene() {
 	wireframe.visible = false
 	mesh.add( wireframe );
 
-	camera.position.z = settings['cam_dist'];
+	camera.position.z = 0.2;
+	camera.position.y = -.2;
+	console.log(camera.position)
 
 	// folders['scale'] = gui.addFolder('Scale');
 	folders['shape'] = gui.addFolder('Shape');
@@ -176,9 +178,9 @@ function setupScene() {
 	folders['tex'] = gui.addFolder('Texture');
 	folders['settings'] = gui.addFolder('Viewing Settings');
 
-	folders['settings'].add(settings, 'cam_dist', 0.2, 0.5).name('View distance').onChange(function(value){
-		camera.position.z = value
-	})
+	// folders['settings'].add(settings, 'cam_dist', 0.2, 0.5).name('View distance').onChange(function(value){
+	// 	camera.position.z = value
+	// })
 
 	folders['settings'].add(settings, 'show_template').name('Show template').onChange(function(value){updateModel(model_params)})
 	folders['settings'].add(settings, 'show_wireframe').name('Show wireframe').onChange(function(value){wireframe.visible = value})
