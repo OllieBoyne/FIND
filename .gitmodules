@@ -1,0 +1,3 @@
+[submodule "src/model/SUPR"]
+	path = src/model/SUPR
+	url = https://github.com/OllieBoyne/SUPR

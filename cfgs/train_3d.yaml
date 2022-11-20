@@ -1,0 +1,29 @@
+EXPERIMENT_NAME: "3D_only" # This will be the name of directory in exp
+USE_THREADING: false
+GPUS: [0, 1] # If using threading, GPUs available
+REG_FIRST_ONLY: false # If set to true, will use the reg-trained model from the first experiment for all future experiments. Requires reg=True for exp 1
+
+# For full list of opts, see src/train/opts.py
+
+COMMON_ARGS: # Arguments Consistent between experiments
+  left_only: true # Only use left feet in dataset
+  tpose_only: true # Only use T-Pose feet in dataset
+  full_caching: true # Cache 3D models, high memory overhead but significantly improves training speed
+
+  copy_over_masking: True # Copy masking of mesh slice over to predicted renders
+  restyle_encoder_path: misc/restyle_encoder_models/articulated.pt # Load restyle encoder model
+
+
+EXPERIMENTS: # Each experiment is its own block, complete with custom arguments
+
+  FIND:
+    gpu: -1 # Run on CPU
+
+    chamf_loss: true
+    smooth_loss: true
+    texture_loss: true
+
+    latent_epochs: 1000
+
+    use_pose_code: True
+    use_latent_labels: True # Fix shape & texture latent codes between similar feet

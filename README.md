@@ -11,13 +11,22 @@ Training and inference code for
 [To be released by BMVC - 21st November 2022]
 
 
+## Installation
+
+1) `git clone --recurse-submodules https://github.com/OllieBoyne/FIND`
+2) `pip install -r requirements.txt`
+3) Download [Foot3D](https://github.com/OllieBoyne/Foot3D) dataset
+4) Edit `src/cfg.yaml` with dataset locations
+
 ## Quickstart
 
-## Foot3D Dataset
+To train a new model,
 
-Please visit the repo for [Foot3D](https://github.com/OllieBoyne/Foot3D) for dataset download instructions.
+`python src/train/run_exmpt.py --exp_name train_3d`
 
 ## Acknowledgement
+
+We acknowledge the collaboration and financial support of [Trya Srl](https://snapfeet.io).
 
 If you make use of our Foot3D dataset or the FIND model, please cite our work:
 

@@ -1,0 +1,26 @@
+DATASET_FOLDER: '/Users/ollie/Library/CloudStorage/OneDrive-UniversityofCambridge/Foot3D-Dataset'
+DATASET_JSON: "/Users/ollie/Library/CloudStorage/OneDrive-UniversityofCambridge/Foot3D-Dataset/foot3d_slice.json"
+
+DATASET_NAME: "Meshes_sliced"
+LOWPOLY_DATASET_NAME: "Meshes_sliced_simplified"
+
+VAL_FEET: ["0021", "0019", "0027", "0004"]
+TEMPLATE_FEET: ['0003']
+TEMPLATE_LOC: '0003/A/0003-A.obj'
+
+PCA_KEYPOINTS: [1308, 1270, 1271, 1113, 1033, 489]
+SUPR_KEYPOINTS: [17, 22, 15, 30, 26, 183]
+SUPR_TOP_LOOP: [2, 5, 4, 7, 6, 8, 9, 121, 122, 120, 10, 1, 0, 11, 3] # Loop defining top of model, in order
+TPOSE: ['0005-A', '0006-A', '0007-A', '0008-A', '0009-A', '0010-A', '0011-A', '0012-A', '0013-A', '0014-A', '0015-A', '0016-A', '0017-A', '0018-A', '0020-A', '0022-A', '0023-A', '0024-A', '0025-A', '0026-A', '0028-A', '0029-A', '0030-A', '0031-A', '0032-A', '0033-A', '0034-A']
+
+# Pose definitions to map a pose string to a vector
+POSE_VECTOR:
+  SIZE: 8
+  0: ['T-Pose'] # 0th index. One element, means that this is +ve
+  1: ['Plantarflex', 'Dorsiflex'] # Two elements, means that first is -ve, second +ve
+  2: ['Inversion', 'Eversion']
+  3: ['Lateral', 'Medial']
+  4: ['Toe Flexion', 'Toe Extension']
+  5: ['Toe Abduction', 'Toe Adduction']
+  6: ['Standing on Floor']
+  7: ['Tiptoes']
