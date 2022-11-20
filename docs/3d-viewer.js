@@ -170,7 +170,7 @@ function setupScene() {
 
 	camera.position.z = 0.2;
 	camera.position.y = -.2;
-	console.log(camera.position)
+	// console.log(camera.position)
 
 	// folders['scale'] = gui.addFolder('Scale');
 	folders['shape'] = gui.addFolder('Shape');
