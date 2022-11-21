@@ -8,8 +8,6 @@ Training and inference code for
 > [Oliver Boyne](https://ollieboyne.github.io), [James Charles](http://www.jjcvision.com), and [Roberto Cipolla](https://mi.eng.cam.ac.uk/~cipolla/) \
 > [[arXiv]](https://arxiv.org/abs/2210.12241#) [[project page]](https://ollieboyne.github.io/FIND/) [[demo]](https://ollieboyne.github.io/FIND/3d-viewer)
 
-[To be released by BMVC - 21st November 2022]
-
 
 ## Installation
 
@@ -20,9 +18,8 @@ Training and inference code for
 
 ## Quickstart
 
-To train a new model,
-
-`python src/train/run_exmpt.py --exp_name train_3d`
+- 3D model training: `python src/train/run_exmpt.py --exp_name train_3d`
+- Unsupervised part learning: [Coming soon]
 
 ## Acknowledgement
 
