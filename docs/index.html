@@ -102,24 +102,23 @@
 
 <!--     Set up sizing for this div (including window resizing listener)-->
         <script>
-            var i = new Image();
-            i.src = "image/find/demo-placeholder.png"
-            var aspect_ratio = i.height / i.width
-            var elem = document.getElementById("demo")
+            var img = new Image();
+            img.onload = function() {
+                var aspect_ratio = img.height / img.width
+                var elem = document.getElementById("demo")
 
-            resize = function(event){
-                var width = parseFloat(elem.offsetWidth)
-                if (isNaN(width * aspect_ratio)){
-                    console.log("NaNs: ", width, aspect_ratio)
-                }
-                else {
+                resize = function(event){
+                    var width = parseFloat(elem.offsetWidth)
                     document.getElementById("header_images").style.height = width * aspect_ratio + "px"
                 }
+
+                window.addEventListener('resize', resize, true)  // resize on window resize
+                window.addEventListener('load', resize, true)
+                resize(true) // initial resize
             }
 
-            window.addEventListener('resize', resize, true)  // resize on window resize
-            window.addEventListener('load', resize, true)
-            resize(true) // initial resize
+            img.src = "image/find/demo-placeholder.png" // load image
+
 
           </script>
 
