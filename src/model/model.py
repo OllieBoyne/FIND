@@ -7,8 +7,7 @@ import numpy as np
 from typing import Union
 
 from torch.nn import functional as F
-from src.model.losses import SilhouetteLoss, TextureLossGTSpace, DisplacementLoss, MeshSmoothnessLoss, DiscriminatorLoss, \
-	PerceptualLoss, RestylePerceptualLoss, ContrastiveLoss
+from src.model.losses import SilhouetteLoss, TextureLossGTSpace, DisplacementLoss, MeshSmoothnessLoss, PerceptualLoss, RestylePerceptualLoss, ContrastiveLoss
 from src.model.renderer import FootRenderer
 from src.train.opts import Opts
 
@@ -983,7 +982,6 @@ class ModelWithLoss(nn.Module):
 		self.mesh_smooth_loss = MeshSmoothnessLoss()
 		self.templ_smooth_loss = MeshSmoothnessLoss()
 		self.rdr = FootRenderer(image_size=256, device=device, bin_size=None)
-		self.discriminator_loss = DiscriminatorLoss()
 		self.pix_loss = nn.MSELoss()
 
 		self.sil_loss = SilhouetteLoss()
