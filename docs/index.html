@@ -86,9 +86,7 @@
         </div>
 
 
-    <div class="container is-max-desktop has-text-centered mt-5", id="header_images">
-
-
+    <div class="container is-max-desktop has-text-centered mt-5" id="header_images">
 
         <div style="width:46%;float:left;height:100%">
         <a href="https://ollieboyne.github.io/FIND/3d-viewer">
@@ -111,9 +109,12 @@
 
             resize = function(event){
                 var width = parseFloat(elem.offsetWidth)
-                var new_height = width * aspect_ratio + "px"
-                document.getElementById("header_images").style.height = new_height
-                console.log("RESIZED: ", new_height)
+                if (isNaN(width * aspect_ratio)){
+                    console.log("NaNs: ", width, aspect_ratio)
+                }
+                else {
+                    document.getElementById("header_images").style.height = width * aspect_ratio + "px"
+                }
             }
 
             window.addEventListener('resize', resize, true)  // resize on window resize
