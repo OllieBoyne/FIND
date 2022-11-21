@@ -9,25 +9,23 @@ fvcore==0.1.5.post20220512
 idna==3.4
 iopath==0.1.10
 kiwisolver==1.4.4
-matplotlib==3.6.2
-numpy==1.23.4
+matplotlib==3.5.3
+numpy
 opencv-python==4.6.0.66
 packaging==21.3
 Pillow==9.3.0
 portalocker==2.6.0
 pyparsing==3.0.9
 python-dateutil==2.8.2
-pytorch3d @ git+https://github.com/facebookresearch/pytorch3d.git@1706eb8216248e54f68cad86f7ea4125c79a3ca4
 PyYAML==6.0
 requests==2.28.1
-scipy==1.9.3
+scipy
 six==1.16.0
 tabulate==0.9.0
 termcolor==2.1.1
-torch==1.13.0
-torchvision==0.14.0
 tqdm==4.64.1
 trimesh==3.16.4
 typing-extensions==4.4.0
 urllib3==1.26.12
 yacs==0.1.8
+pytorch3d @ git+https://github.com/facebookresearch/pytorch3d.git@1706eb8216248e54f68cad86f7ea4125c79a3ca4

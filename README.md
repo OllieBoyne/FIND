@@ -12,15 +12,17 @@ Official training and evaluation code for
 
 ## Installation
 
+(Tested on macOS 12.6, Ubuntu 16.04)
+
 1) `git clone --recurse-submodules https://github.com/OllieBoyne/FIND`
-2) `pip install -r requirements_<mac_linux/windows>.txt`
-   1) on Windows, install PyTorch3D via `python src/utils/install_pytorch3d.py`
-3) Download [Foot3D](https://github.com/OllieBoyne/Foot3D) dataset
-4) Edit `src/cfg.yaml` with dataset locations
+2) Install [PyTorch](https://pytorch.org/get-started/locally) and [PyTorch3D](https://github.com/facebookresearch/pytorch3d/blob/main/INSTALL.md)
+3) `pip install -r requirements_<mac_linux/windows>.txt`
+4) Download [Foot3D](https://github.com/OllieBoyne/Foot3D) dataset
+5) Edit `src/cfg.yaml` with dataset locations
 
 ## Quickstart
 
-- 3D model training: `python src/train/run_exmpt.py --exp_name train_3d`
+- 3D model training: `python src/train/run_expmt.py --exp_name train_3d`
 - Unsupervised part learning: [Coming soon]
 
 ## Acknowledgement
