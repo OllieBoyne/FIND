@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>FIND</title>
-    <link rel="shortcut icon" type="image/jpg" href="image/logo.ico" />
+    <link rel="shortcut icon" type="image/ico" href="image/find/find-favicon.ico" />
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
     <link rel="stylesheet" href="style.css">
@@ -113,6 +113,7 @@
                 var width = parseFloat(elem.offsetWidth)
                 var new_height = width * aspect_ratio + "px"
                 document.getElementById("header_images").style.height = new_height
+                console.log("RESIZED: ", new_height)
             }
 
             window.addEventListener('resize', resize, true)  // resize on window resize

@@ -1,5 +1,5 @@
 <p align="center">
-  <img width=100% src="https://ollieboyne.github.io/FIND/image/find/find-logo.png">
+  <img width=70% src="https://ollieboyne.github.io/FIND/image/find/find-logo.png">
 </p>
 
 Official training and evaluation code for
