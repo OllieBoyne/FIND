@@ -2,9 +2,10 @@
   <img width=100% src="https://ollieboyne.github.io/FIND/image/find/find-logo.png">
 </p>
 
-Training and inference code for
+Official training and evaluation code for
 
-> **FIND: An Unsupervised Implicit 3D Model of Articulated Human Feet** \
+> **FIND: An Unsupervised Implicit 3D Model of Articulated Human Feet**  \
+> British Machine Vision Conference 2022 \
 > [Oliver Boyne](https://ollieboyne.github.io), [James Charles](http://www.jjcvision.com), and [Roberto Cipolla](https://mi.eng.cam.ac.uk/~cipolla/) \
 > [[arXiv]](https://arxiv.org/abs/2210.12241#) [[project page]](https://ollieboyne.github.io/FIND/) [[demo]](https://ollieboyne.github.io/FIND/3d-viewer)
 
