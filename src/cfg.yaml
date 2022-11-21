@@ -1,5 +1,5 @@
-DATASET_FOLDER: '/Users/ollie/Library/CloudStorage/OneDrive-UniversityofCambridge/Foot3D-Dataset'
-DATASET_JSON: "/Users/ollie/Library/CloudStorage/OneDrive-UniversityofCambridge/Foot3D-Dataset/foot3d_slice.json"
+DATASET_FOLDER: ''  # Enter directory of Foot3D
+DATASET_JSON: ''  # Enter json location for Foot3D
 
 DATASET_NAME: "Meshes_sliced"
 LOWPOLY_DATASET_NAME: "Meshes_sliced_simplified"
