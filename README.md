@@ -14,6 +14,7 @@ Official training and evaluation code for
 
 1) `git clone --recurse-submodules https://github.com/OllieBoyne/FIND`
 2) `pip install -r requirements.txt`
+   1) on Windows, install PyTorch3D via `python src/utils/install_pytorch3d.py`
 3) Download [Foot3D](https://github.com/OllieBoyne/Foot3D) dataset
 4) Edit `src/cfg.yaml` with dataset locations
 
