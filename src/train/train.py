@@ -60,11 +60,19 @@ def export_meshes(model: Model, dataset: Foot3DDataset,
 	reg = reg.data[idx].clone()
 
 	tex_vec_0 = None
+	pose_vec_0 = None
 	if hasattr(model, 'use_texvec') and model.use_texvec:
 		texvec = model.texvec if is_train else model.texvec_val
 		tex_vec_0 = texvec.data[idx].unsqueeze(0)
+
+	if hasattr(model, 'use_posevec') and model.use_posevec:
+		posevec = model.posevec if is_train else model.posevec_val
+		pose_vec_0 = posevec.data[idx].unsqueeze(0)
+	
+
 	res = model.get_meshes(shapevec=shape_vec_0.unsqueeze(0), reg=reg.unsqueeze(0),
-						   texvec=tex_vec_0)
+						   texvec=tex_vec_0, posevec=pose_vec_0)
+						   
 	mesh = res['meshes']
 	mesh = to_trimesh(mesh)
 	if 'col' in res:

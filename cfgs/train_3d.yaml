@@ -13,11 +13,15 @@ COMMON_ARGS: # Arguments Consistent between experiments
   copy_over_masking: True # Copy masking of mesh slice over to predicted renders
   restyle_encoder_path: misc/restyle_encoder_models/articulated.pt # Load restyle encoder model
 
+  low_poly_meshes: true # Use reduced polygon GT meshes (significantly improves train speed)
+
 
 EXPERIMENTS: # Each experiment is its own block, complete with custom arguments
 
   FIND:
-    gpu: -1 # Run on CPU
+    gpu: 0 # Run on CUDA GPU 0
+
+    reg: true # Run registration step between Model and Foot3D scans
 
     chamf_loss: true
     smooth_loss: true
