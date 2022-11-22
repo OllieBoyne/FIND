@@ -8,4 +8,4 @@ src_dir = os.path.join(main_dir, 'src')
 
 sys.path.append(main_dir)
 sys.path.append(src_dir)
-sys.path.append(os.path.join(main_dir, 'restyle_encoder'))
+sys.path.append(os.path.join(main_dir, 'src', 'model', 'restyle_encoder'))

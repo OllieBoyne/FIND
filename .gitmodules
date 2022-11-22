@@ -1,3 +1,6 @@
 [submodule "src/model/SUPR"]
 	path = src/model/SUPR
 	url = https://github.com/OllieBoyne/SUPR
+[submodule "src/model/restyle_encoder"]
+	path = src/model/restyle_encoder
+	url = https://bitbucket.org/jjcharles1111/restyle_encoder

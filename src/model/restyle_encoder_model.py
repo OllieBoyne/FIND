@@ -4,11 +4,11 @@ from multiprocessing.sharedctypes import Value
 import torch
 import init_paths
 import sys
-from restyle_encoder.models.psp import pSp
+from src.model.restyle_encoder.models.psp import pSp
 from argparse import Namespace
 nn = torch.nn
-from restyle_encoder.utils.inference_utils import run_on_batch, get_average_image
-from restyle_encoder.options.test_options import TestOptions
+from src.model.restyle_encoder.utils.inference_utils import run_on_batch, get_average_image
+from src.model.restyle_encoder.options.test_options import TestOptions
 import numpy as np
 import cv2
 import os

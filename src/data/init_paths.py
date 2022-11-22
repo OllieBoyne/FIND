@@ -6,4 +6,5 @@ def up1(p):
 main_dir = up1(up1(os.path.dirname(os.path.realpath(__file__))))
 sys.path.append(main_dir)
 sys.path.append(os.path.join(main_dir, 'src'))
-sys.path.append(os.path.join(main_dir, 'restyle_encoder'))
+sys.path.append(os.path.join(main_dir, 'src', 'model'))
+sys.path.append(os.path.join(main_dir, 'src', 'model', 'restyle_encoder'))
