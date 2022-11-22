@@ -16,3 +16,23 @@
   /*height: 200px !important;*/
   margin: 0 auto 1em auto; /*Center the image*/
 }
+
+.myvideo{
+    width: 200px;
+    height: 200px;
+}
+
+.video_button {
+  transition-duration: 0.2s;
+}
+
+.video_button:hover {
+  background-color: darkgrey; /* Green */
+  color: white;
+}
+
+.video_button_clicked{
+    background-color: slategrey;
+    color: white;
+    font-weight: bold;
+}
