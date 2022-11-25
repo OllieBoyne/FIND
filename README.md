@@ -18,7 +18,7 @@ Official training and evaluation code for
 2) Install [PyTorch](https://pytorch.org/get-started/locally) and [PyTorch3D](https://github.com/facebookresearch/pytorch3d/blob/main/INSTALL.md)
 3) `pip install -r requirements_<mac_linux/windows>.txt`
 4) Download the [Foot3D](https://github.com/OllieBoyne/Foot3D) dataset
-5) [Download the models](##model-downloads)
+5) [Download the models](#model-downloads)
 6) Edit `src/cfg.yaml` with dataset locations
 
 ## Usage
