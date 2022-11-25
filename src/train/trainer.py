@@ -6,6 +6,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 import torch
 from src.train.opts import Opts
+from src.utils.pytorch3d_tools import to_trimesh
+import trimesh
+import os
 nn = torch.nn
 
 def pretty_print_loss(loss_key:str):
@@ -253,3 +256,41 @@ class Trainer:
 		fig.tight_layout()
 		fig.savefig(out_loc, dpi=200)
 		plt.close('all')
+
+	def export_meshes(self, export_loc, is_train=False, export_gt=False):
+
+		j = 0
+		loader = [self.val_loader, self.train_loader][is_train]
+		with tqdm(loader, bar_format='{l_bar}{bar:10}{r_bar}{bar:-10b}') as tqdm_it:
+			tqdm_it.set_description(f"Exporting {['val', 'train'][is_train]} meshes")
+			for batch in tqdm_it:
+
+				# Add latent vectors to batch
+				latent_vectors = [self.latent_vectors_val, self.latent_vectors_train][is_train]
+				batch.update(**self.sample_latent_vectors(batch, latent_vectors=latent_vectors))		
+
+				res = self.model.model.get_meshes_from_batch(batch, is_train=is_train)
+				
+				for i in range(len(res['meshes'])):
+					
+					mesh = to_trimesh(res['meshes'][i])
+					if 'col' in res:
+						cols = res['col'][i].cpu().detach().numpy()
+						mesh.visual.vertex_colors = cols
+
+					obj_data = trimesh.exchange.obj.export_obj(mesh)
+					os.makedirs(export_loc, exist_ok=True)
+					with open(os.path.join(export_loc, f"{batch['name'][i]}.obj"), 'w') as outfile:
+						outfile.write(obj_data)
+
+					if export_gt:
+						vertsgt, facesgt = i['verts'], i['faces']
+						meshgt = trimesh.Trimesh(vertices=vertsgt.cpu().detach().numpy(), faces=facesgt.cpu().detach().numpy())
+
+						export_gt_loc = export_loc.replace('meshes', 'meshes_gt')
+						obj_data = trimesh.exchange.obj.export_obj(meshgt)
+						os.makedirs(export_gt_loc, exist_ok=True)
+						with open(os.path.join(export_gt_loc, f"{batch['name'][i]:04d}.obj"), 'w') as outfile:
+							outfile.write(obj_data)
+					
+					j += 1

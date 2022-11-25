@@ -981,7 +981,10 @@ class ModelWithLoss(nn.Module):
 
 		self.mesh_smooth_loss = MeshSmoothnessLoss()
 		self.templ_smooth_loss = MeshSmoothnessLoss()
-		self.rdr = FootRenderer(image_size=256, device=device, bin_size=None)
+
+		max_faces_per_bin = 30000 if not opts.low_poly_meshes else None # Heuristic max_faces_per_bin for fast and effective rendering
+		self.rdr = FootRenderer(image_size=256, device=device, bin_size=None, max_faces_per_bin=max_faces_per_bin)
+
 		self.pix_loss = nn.MSELoss()
 
 		self.sil_loss = SilhouetteLoss()

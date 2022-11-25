@@ -7,20 +7,14 @@ REG_FIRST_ONLY: false # If set to true, will use the reg-trained model from the 
 
 COMMON_ARGS: # Arguments Consistent between experiments
   left_only: true # Only use left feet in dataset
-  tpose_only: true # Only use T-Pose feet in dataset
+  tpose_only: false # Use T-Pose and articulated feet in dataset
   full_caching: true # Cache 3D models, high memory overhead but significantly improves training speed
 
   copy_over_masking: True # Copy masking of mesh slice over to predicted renders
-  restyle_encoder_path: misc/restyle_encoder_models/articulated.pt # Load restyle encoder model
-
-  low_poly_meshes: true # Use reduced polygon GT meshes (significantly improves train speed)
-
 
 EXPERIMENTS: # Each experiment is its own block, complete with custom arguments
 
   FIND:
-    gpu: 0 # Run on CUDA GPU 0
-
     reg: true # Run registration step between Model and Foot3D scans
 
     chamf_loss: true

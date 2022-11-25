@@ -9,7 +9,7 @@ import os
 import torch
 from src.utils.utils import cfg
 import numpy as np
-from src.dataset import Foot3DDataset, NoTextureLoading, BatchCollator
+from src.data.dataset import Foot3DDataset, NoTextureLoading, BatchCollator
 import trimesh
 from pytorch3d.structures import join_meshes_as_batch
 from src.model.renderer import FootRenderer
@@ -25,9 +25,10 @@ from tqdm import tqdm
 from pytorch3d.loss.chamfer import _handle_pointcloud_input, knn_points
 from src.vis.mesh_turntable import turntable
 from pytorch3d.renderer import TexturesVertex
+from collections import namedtuple
+from src.utils.pytorch3d_tools import to_trimesh
 
 # os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
-
 z_cutoff = 0.07
 
 def vis_kps(kps):
@@ -52,7 +53,8 @@ def vis_meshes(meshes):
 	sce = trimesh.Scene(geometry=geom)
 	sce.show()
 
-def main(src, opts, exp_name=None, out_dir='eval_export/keypoints', gpu=0, no_rendering=False):
+def main(src, opts, exp_name=None, out_dir='eval_export/keypoints', gpu=0, no_rendering=False, produce_spins=False,
+		export_meshes=True):
 
 	if torch.cuda.is_available():
 		torch.cuda.set_device(gpu)
@@ -74,7 +76,7 @@ def main(src, opts, exp_name=None, out_dir='eval_export/keypoints', gpu=0, no_re
 	renderer = FootRenderer(image_size=imsize, device=device)
 
 	collate_fn = BatchCollator(device=device).collate_batches
-	dataset = Foot3DDataset(left_only=True, tpose_only=False, is_train=False, device=device, N=1)
+	dataset = Foot3DDataset(left_only=True, tpose_only=False, is_train=False, device=device)
 	gt_loader = DataLoader(dataset, shuffle=False, collate_fn=collate_fn)
 
 	template_foot = cfg['TEMPLATE_FEET'][0]
@@ -119,8 +121,7 @@ def main(src, opts, exp_name=None, out_dir='eval_export/keypoints', gpu=0, no_re
 		# Load predicted mesh
 		mesh_kwargs = {}
 		batch.update(**sample_latent_vectors(batch, latent_vecs))
-		# batch['reg_val'][..., 0] += 0.01
-		# mesh_kwargs = {k:batch.get(k+'_val', None) for k in ['reg', 'shapevec', 'posevec', 'texvec']}
+		mesh_kwargs = {k:batch.get(k+'_val', None) for k in ['reg', 'shapevec', 'posevec', 'texvec']}
 		# res = model.get_meshes(**mesh_kwargs)
 		res = model.get_meshes_from_batch(batch, is_train=False)
 		predictions.append(res)
@@ -144,7 +145,7 @@ def main(src, opts, exp_name=None, out_dir='eval_export/keypoints', gpu=0, no_re
 		render_correspondences(pred_meshes, pred_kps, os.path.join(out_dir, 'pred.png'))
 
 	# Calculate chamfer losses
-	samples = 5000
+	samples = 10000
 	gt_pts = sample_points_from_meshes(gt_meshes, num_samples=samples)
 	pred_pts = sample_points_from_meshes(pred_meshes, num_samples=samples)
 	chamf, _ = chamfer_distance(gt_pts, pred_pts)
@@ -159,39 +160,62 @@ def main(src, opts, exp_name=None, out_dir='eval_export/keypoints', gpu=0, no_re
 
 	chamf_z_cutoff = torch.mean(torch.stack(chamf_cutoffs))
 
-	import trimesh
-	pcl1 = trimesh.PointCloud(vertices=pred_pts.cpu().detach().numpy()[0], colors=[[255, 0, 0]] * samples)
-	pcl2 = trimesh.PointCloud(vertices=gt_pts.cpu().detach().numpy()[0], colors=[[0, 255, 0]] * samples)
-	plane = trimesh.Trimesh(vertices=[[-.1, -.1, z_cutoff], [-.1, .1, z_cutoff], [.1, .1, z_cutoff], [.1, -.1, z_cutoff]],
-							faces=[[0, 1, 2], [2,3,0]])
-	print(1e6*chamf.item(), 1e6*chamf_z_cutoff.item())
-	trimesh.Scene([pcl1, pcl2, plane]).show()
+	# Render 6 spins per model - GT Color, GT geom, GT Chamf, Pred Color, Pred Geom, Pred Chamf
+	if produce_spins:
+		spins_dir = os.path.join(out_dir, 'spins')
+		os.makedirs(spins_dir, exist_ok=True)
+		for n in range(len(predictions)):
+			gt_mesh = gt_meshes[n].clone()
+			pred_mesh = pred_meshes[n].clone()
 
-	# Render chamfer error spin
-	for n in [0]:
-		gt_mesh = gt_meshes[n].clone()
+			x, x_lengths, _ = _handle_pointcloud_input(pred_mesh.verts_padded(), None, None)
+			y, y_lengths, _ = _handle_pointcloud_input(gt_mesh.verts_padded(), None, None)
+			
+			x_sampled, x_sampled_lengths, _ = _handle_pointcloud_input(pred_pts[[n]], None, None)
 
-		x, x_lengths, _ = _handle_pointcloud_input(pred_meshes[n].verts_padded(), None, None)
-		y, y_lengths, _ = _handle_pointcloud_input(gt_mesh.verts_padded(), None, None)
-		
-		x_sampled, x_sampled_lengths, _ = _handle_pointcloud_input(pred_pts[[n]], None, None)
+			x_nn = knn_points(x, y, lengths1=x_lengths, lengths2=y_lengths, K=1)
+			y_nn = knn_points(y, x_sampled, lengths1=y_lengths, lengths2=x_sampled_lengths, K=1) # Has to be to x-sampled to account for low vertex count models (eg SUPR)
+			per_vert_errors = x_nn.dists[..., 0]  # (N, P1)
 
-		x_nn = knn_points(x, y, lengths1=x_lengths, lengths2=y_lengths, K=1)
-		y_nn = knn_points(y, x_sampled, lengths1=y_lengths, lengths2=x_sampled_lengths, K=1) # Has to be to x-sampled to account for low vertex count models (eg SUPR)
-		per_vert_errors = x_nn.dists[..., 0]  # (N, P1)
+			max_col = 30e-6 # 50 um
+			col = torch.zeros_like(pred_mesh.verts_padded())
+			col[..., 0] = torch.clamp(per_vert_errors / max_col, min=0, max=1)
+			pred_chamf_tex = TexturesVertex(col)
+			pred_grey_tex = TexturesVertex(torch.ones_like(col) * 0.5)
 
-		max_col = 100e-6 #100 um
-		col = torch.zeros_like(res['meshes'].verts_padded())
-		col[..., 0] = torch.clamp(per_vert_errors / max_col, min=0, max=1)
-		res['meshes'].textures = TexturesVertex(col)
+			col_gt = torch.zeros_like(gt_mesh.verts_padded())
+			col_gt[..., 0] = torch.clamp(y_nn.dists[..., 0] / max_col, min=0, max=1)
+			gt_chamf_tex = TexturesVertex(col_gt)
+			gt_grey_tex = TexturesVertex(torch.ones_like(col_gt) * 0.5)
 
-		col_gt = torch.zeros_like(gt_mesh.verts_padded())
-		col_gt[..., 0] = torch.clamp(y_nn.dists[..., 0] / max_col, min=0, max=1)
-		gt_mesh.textures = TexturesVertex(col_gt)
+			# Define all renders
+			Render = namedtuple('Render', 'mesh texture name')
 
-		turntable(res['meshes'], out_loc=os.path.join(out_dir, f'spin_errors_{n:02d}.mp4'), nframes=250)
-		turntable(gt_mesh, out_loc=os.path.join(out_dir, f'spin_errors_gt_{n:02d}.mp4'), nframes=250)
-	# 	print(x_nn.dists.mean()*1e6, y_nn.dists.mean()*1e6)
+			renders = [Render(pred_mesh, pred_mesh.textures.clone(), 'pred_rgb'), Render(pred_mesh, pred_chamf_tex, 'pred_chamf'), Render(pred_mesh, pred_grey_tex, 'pred_grey'),
+						Render(gt_mesh, gt_mesh.textures.clone(), 'gt_rgb'), Render(gt_mesh, gt_chamf_tex, 'gt_chamf'), Render(gt_mesh, gt_grey_tex, 'gt_grey')]
+
+			for render in renders:
+				fname = f'{n:02d}_{render.name}.mp4'
+				mesh = render.mesh
+				mesh.textures = render.texture
+				turntable(mesh, out_loc=os.path.join(spins_dir, fname), nframes=250, silent=True, azim=70, dist=0.35, image_size=512)
+
+	# Export meshes
+	if export_meshes:
+		mesh_dir = os.path.join(out_dir, 'meshes')
+		os.makedirs(mesh_dir, exist_ok=True)
+
+		for n in range(len(predictions)):
+			gt_mesh = gt_meshes[n].clone()
+			pred_mesh = pred_meshes[n].clone()
+			for key, mesh in dict(gt_mesh=gt_mesh, pred_mesh=pred_mesh).items():
+				out_mesh = to_trimesh(mesh)
+
+				export_loc = os.path.join(mesh_dir, f'{n:02d}_{key}.obj')
+				obj_data = trimesh.exchange.obj.export_obj(out_mesh)
+				with open(export_loc, 'w') as outfile:
+					outfile.write(obj_data)
+
 
 	dists = torch.norm(pred_kps - gt_kps, dim=-1)
 	out_data['Keypoint (mm)'] = dists.mean().cpu().detach().numpy() * 1e3
@@ -219,7 +243,7 @@ def run_on_exp(exp_name, gpu=0, no_rendering=False):
 		for expmt in tqdm_it:
 			tqdm_it.set_description(f"3D evaluating experiment {exp_name}/{expmt}...")
 			exp_dir = os.path.join('exp', exp_name, expmt)
-			src = os.path.join(exp_dir, 'reg.pth')
+			src = os.path.join(exp_dir, 'model_best.pth')
 			opts = os.path.join(exp_dir, 'opts.yaml')
 
 			out_dir = os.path.join('eval_export', 'eval_3d', exp_name, expmt)

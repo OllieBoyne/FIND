@@ -8,7 +8,6 @@ from torch.utils.data import DataLoader
 
 from src.data.dataset import Foot3DDataset, BatchCollator, NoTextureLoading
 from src.model.model import Model, ModelWithLoss
-from src.utils.pytorch3d_tools import to_trimesh
 from src.utils.utils import cfg
 from src.train.opts import Opts
 from src.train.trainer import Trainer
@@ -46,54 +45,7 @@ class Logger(object):
 		pass
 
 
-def export_meshes(model: Model, dataset: Foot3DDataset,
-				  idx=0, export_loc='vis/MultiFootShapeOnly/meshes', is_train=False,
-				  export_gt=False):
-	"""Render displacement example AND template mesh"""
 
-	verts, faces = model.template_verts.cpu().detach().numpy()[0], model.template_faces.cpu().detach().numpy()[0]
-	meshtempl = trimesh.Trimesh(verts, faces)
-
-	shapevec = model.shapevec if is_train else model.shapevec_val
-	reg = model.reg if is_train else model.reg_val
-	shape_vec_0 = shapevec.data[idx]
-	reg = reg.data[idx].clone()
-
-	tex_vec_0 = None
-	pose_vec_0 = None
-	if hasattr(model, 'use_texvec') and model.use_texvec:
-		texvec = model.texvec if is_train else model.texvec_val
-		tex_vec_0 = texvec.data[idx].unsqueeze(0)
-
-	if hasattr(model, 'use_posevec') and model.use_posevec:
-		posevec = model.posevec if is_train else model.posevec_val
-		pose_vec_0 = posevec.data[idx].unsqueeze(0)
-	
-
-	res = model.get_meshes(shapevec=shape_vec_0.unsqueeze(0), reg=reg.unsqueeze(0),
-						   texvec=tex_vec_0, posevec=pose_vec_0)
-						   
-	mesh = res['meshes']
-	mesh = to_trimesh(mesh)
-	if 'col' in res:
-		cols = res['col'][0].cpu().detach().numpy()
-		mesh.visual.vertex_colors = cols
-
-	obj_data = trimesh.exchange.obj.export_obj(mesh)
-	os.makedirs(export_loc, exist_ok=True)
-	with open(os.path.join(export_loc, f'{idx:04d}.obj'), 'w') as outfile:
-		outfile.write(obj_data)
-
-	if export_gt:
-		i = dataset[idx]
-		vertsgt, facesgt = i['verts'], i['faces']
-		meshgt = trimesh.Trimesh(vertices=vertsgt.cpu().detach().numpy(), faces=facesgt.cpu().detach().numpy())
-
-		export_gt_loc = export_loc.replace('meshes', 'meshes_gt')
-		obj_data = trimesh.exchange.obj.export_obj(meshgt)
-		os.makedirs(export_gt_loc, exist_ok=True)
-		with open(os.path.join(export_gt_loc, f'{idx:04d}.obj'), 'w') as outfile:
-			outfile.write(obj_data)
 
 
 def train_network(args, model, trainer, logger, train_dataset, val_dataset, out_dir='', checkpoint_dir='',
@@ -144,13 +96,8 @@ def train_network(args, model, trainer, logger, train_dataset, val_dataset, out_
 
 				# Only export meshes on last epoch
 				if is_last:
-					for i in range(len(train_dataset)):
-						export_meshes(model.model, train_dataset, idx=i, export_loc=os.path.join(args.vis_dir,'train_meshes'),
-									is_train=True, export_gt=True)
-
-					for i in range(len(val_dataset)):
-						export_meshes(model.model, val_dataset, idx=i, export_loc=os.path.join(args.vis_dir,'val_meshes'),
-									  export_gt=True)
+					trainer.export_meshes(export_loc=os.path.join(args.vis_dir,'train_meshes'), is_train=True, export_gt=False)
+					trainer.export_meshes(export_loc=os.path.join(args.vis_dir,'val_meshes'), is_train=False, export_gt=False)
 
 			else:
 				print(f"NOT NEW BEST. epoch = {epoch}, metric = {metric:.4f}, best = {val_best:.4f}")
