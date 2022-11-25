@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/49f46e7382.js" crossorigin="anonymous"></script>
+    <script src="video_slider.js"></script>
 </head>
 
 <body>
@@ -119,7 +120,6 @@
 
             img.src = "image/find/demo-placeholder.png" // load image
 
-
           </script>
 
 
@@ -191,9 +191,38 @@
             </h1>
             <figure class="image">
                 <img src="image/find/results/qual_3d.png" class="scaled_center_img"/>
-                <img src="image/find/results/quant_3d.pdf" style="margin: 0 auto 1em auto; width:90%;"/>
+                <img src="image/find/results/quant_3d.png" style="margin: 0 auto 1em auto; width:90%;"/>
             </figure>
 
+
+
+            <div>
+              <video loop autoplay id="video-grey">
+                <source src=image/find/spins/grey.mp4>
+                <source src=image/find/spins/grey.webm>
+              </video>
+
+                <video loop autoplay id="video-rgb" style="display:none">
+                  <source src=image/find/spins/rgb.mp4>
+                  <source src=image/find/spins/rgb.webm>
+                </video>
+
+
+                <video loop autoplay id="video-chamf" style="display:none">
+                  <source src=image/find/spins/chamf.mp4>
+                  <source src=image/find/spins/chamf.webm>
+                </video>
+
+                <table style="width:100%;text-align:center;font-weight:bold;table-layout: fixed">
+                <td>GT</td><td>FIND</td><td>PCA</td>  <td>SUPR</td>
+                </table>
+            </div>
+
+            <table style="margin-left: auto; margin-right: auto;">
+                <td><button onclick="show_grey()" class="video_button" id="button-grey">Grey</button></td>
+                <td><button onclick="show_rgb()" class="video_button" id="button-rgb">RGB</button></td>
+                <td><button onclick="show_chamf()" class="video_button" id="button-chamf">Per-vertex error</button></td>
+            </table>
 
             <div class="content has-text-justified-desktop">
                 <p></p>
@@ -206,6 +235,7 @@
                     We show significant qualitative and quantitative improvements.
                 </p>
             </div>
+
 
         </div>
 
@@ -235,16 +265,7 @@
         </div>
     </section>
 
-<!--    <section class="section pt-0">-->
-<!--        <div class="container is-max-desktop">-->
-<!--            <h1 class="title is-4">-->
-<!--                BibTeX-->
-<!--            </h1>-->
-<!--            <pre>-->
-<!--                -->
-<!--            </pre>-->
-<!--        </div>-->
-<!--    </section>-->
+
     <footer class="footer">
         <div class="content has-text-centered">
             <p>
