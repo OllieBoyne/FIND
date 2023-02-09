@@ -167,7 +167,7 @@ class Opts():
 		p.add_argument('--unseen', action='store_true', help="Evaluate on 'unseen' images")
 		p.add_argument('--nounseen', action='store_true', help="LEGACY")
 
-		args = p.parse_args()
+		args, _ = p.parse_known_args()
 
 		self.options_list = list(vars(args).keys())
 		self.parse(args)
