@@ -442,12 +442,12 @@ class NeuralDisplacementField(Model):
 
 		out = {}
 
-		out['disp'] = 0.1 * F.tanh(disp)
+		out['disp'] = 0.1 * torch.tanh(disp)
 
 		if self.use_avg_colour:
-			col = self.avg_col[None, None, :] + 0.5 * (1 + F.tanh(col))
+			col = self.avg_col[None, None, :] + 0.5 * (1 + torch.tanh(col))
 		else:
-			col = 0.5 * (1 + F.tanh(col))
+			col = 0.5 * (1 + torch.tanh(col))
 
 		out['col'] = col
 
