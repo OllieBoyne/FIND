@@ -36,7 +36,7 @@ python src/train/run_expmt.py --exp_name train_3d
 Models are evaluated for 3D metrics (chamfer and keypoint error) under the `exp` folder, which they will be saved to after training. An entire directory of models within `exp` is evaluated at once, for example:
 
 ```
-python src/train/eval_3d.py --exp_name 3D_only
+python src/eval/eval_3d.py --exp_name 3D_only
 ```
 
 Evaluation outputs are saved to `eval_export/eval_3d`
