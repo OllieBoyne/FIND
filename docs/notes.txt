@@ -1,0 +1,1 @@
+<!--https://stackoverflow.com/questions/50176191/three-js-manipulate-an-object-from-objloader-->
