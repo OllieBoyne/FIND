@@ -9,8 +9,8 @@ from pytorch3d.loss.chamfer import *
 from pytorch3d.ops.sample_points_from_meshes import _rand_barycentric_coords, packed_to_padded, mesh_face_areas_normals
 
 from src.model.vgg_net import LossNetwork
-if torch.cuda.is_available():
-	from src.model.restyle_encoder_model import RestyleEncoder
+# if torch.cuda.is_available():
+#	from src.model.restyle_encoder_model import RestyleEncoder
 
 import os, cv2
 
