@@ -41,10 +41,6 @@ python src/eval/eval_3d.py --exp_name 3D_only
 
 Evaluation outputs are saved to `eval_export/eval_3d`
 
-### Part-based learning - training and evaluation
-
-[Coming soon]
-
 ## Model downloads
 
 - Pre-trained FIND models can be [downloaded from here](https://drive.google.com/drive/folders/13C8xftuvJTicMCsdyg-B8ZgmU_CA07iv?usp=sharing)
