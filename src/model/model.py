@@ -1,5 +1,4 @@
 
-import init_paths
 import os
 import torch
 from src.utils.fourier_feature_transform import FourierFeatureTransform
@@ -170,7 +169,7 @@ class Model(nn.Module):
 		ext = os.path.splitext(file)[-1]
 		assert ext == '.pth', f"Generic models can only load from .pth files - received `{ext}` file."
 
-		data = torch.load(file, map_location=device)
+		data = torch.load(file, map_location=device, weights_only=False)
 
 		# If loading new latents, override train_size and val_size from params
 		if opts.dont_load_latents:
