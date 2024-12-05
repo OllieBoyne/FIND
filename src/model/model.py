@@ -529,6 +529,9 @@ class NeuralDisplacementField(Model):
 			avg_col = state_dict['avg_col']
 			self.avg_col = nn.Parameter(avg_col.to(device), requires_grad=False)
 
+	def to(self, device):
+		self.template_mesh = self.template_mesh.to(device)
+		return super().to(device)
 
 class PCAModel(Model):
 	"""Linear PCA Model"""
