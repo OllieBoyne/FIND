@@ -1,4 +1,3 @@
-import init_paths
 import torch
 import yaml
 import os
