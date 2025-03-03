@@ -4,9 +4,9 @@ from multiprocessing.sharedctypes import Value
 import torch
 import pytorch3d
 from torch import nn
-from pytorch3d.renderer import RasterizationSettings, MeshRenderer, MeshRasterizer, FoVPerspectiveCameras,\
-	look_at_view_transform,SoftPhongShader, PointLights,SoftSilhouetteShader,BlendParams,MeshRendererWithFragments, TexturesUV,\
- 	PointsRasterizationSettings, PointsRenderer, PulsarPointsRenderer, PointsRasterizer,AlphaCompositor, TexturesVertex
+from pytorch3d.renderer import RasterizationSettings, MeshRasterizer, FoVPerspectiveCameras,\
+	look_at_view_transform,SoftPhongShader, PointLights,SoftSilhouetteShader,BlendParams, TexturesUV,\
+ 	PointsRasterizationSettings, PointsRenderer, PointsRasterizer,AlphaCompositor, TexturesVertex
 
 from pytorch3d.renderer.mesh.rasterizer import Fragments
 from pytorch3d.renderer.mesh.rasterize_meshes import rasterize_meshes
